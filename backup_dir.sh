@@ -12,15 +12,20 @@ tarsnapstring="/usr/local/bin/tarsnap \
   --keyfile $tarsnapkeyfile \
   --cachedir $tarsnapcachedir"
 
-fix_tarsnap_cachedir() {
-  $tarsnapstring --fsck
-  $tarsnapstring -c -f $currentfile $currentdir
-}
-
-if $tarsnapstring --list-archives | grep "$currentfile" >>/dev/null
+if $tarsnapstring --list-archives | grep $currentfile
 then \
   echo "file exists already, doing nothing"
 else \
-  $tarsnapstring -c -f $currentfile $currentdir || fix_tarsnap_cachedir
+  for i in `seq 1 3`
+  do \
+    if $tarsnapstring -c -f $currentfile $currentdir 
+    then \
+      break
+    else \
+      sleep $(expr 10 \* $i)
+      $tarsnapstring --fsck
+      sleep $(expr 10 \* $i)
+    fi
+  done
 fi
 
