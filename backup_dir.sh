@@ -1,5 +1,5 @@
 #!/bin/sh -x
-. ./backup_vars.txt
+. $(dirname $0)/backup_vars.txt
 if [ -d "$1" ]
 then \
   currentdir=$1
